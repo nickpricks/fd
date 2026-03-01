@@ -72,7 +72,7 @@ package cli
 import (
 	"fmt"
 	"strings"
-	"github.com/nickpricks/ft/internal/notes"
+	"github.com/nickpricks/ft/internal/core"
 	"github.com/spf13/cobra"
 )
 
@@ -111,11 +111,11 @@ func init() {
 
 ---
 
-## `internal/notes/add.go`
+## `internal/core/add.go`
 This is the core business logic where notes are actually created on the filesystem.
 
 ```go
-package notes
+package core
 
 import (
 	"fmt"
@@ -156,7 +156,7 @@ func Add(text string) (string, error) {
 ```
 ---
 
-## `internal/notes/list.go`
+## `internal/core/list.go`
 This handles retrieving and sorting all notes.
 - Uses `filepath.WalkDir` to efficiently scan the base directory.
 - Filters out non-markdown files and directories.
@@ -165,14 +165,14 @@ This handles retrieving and sorting all notes.
 
 ---
 
-## `internal/notes/read.go`
+## `internal/core/read.go`
 This fetches a note's raw text given its ID.
 - Reuses `findNoteByID(id)` to scan the latest day folders first.
 - Uses `os.ReadFile` to pull the raw string content into memory.
 
 ---
 
-## `internal/notes/edit.go`
+## `internal/core/edit.go`
 This appends text to an existing note.
 - Focuses solely on append operations for safety.
 - Opens the specific note file with `os.O_APPEND|os.O_WRONLY` flags.
@@ -180,11 +180,11 @@ This appends text to an existing note.
 
 ---
 
-## `internal/notes/add_test.go`
+## `internal/core/add_test.go`
 This is how we test our note-creation logic. We isolate our tests from the real filesystem so that running tests doesn't clutter the user's actual notes.
 
 ```go
-package notes
+package core
 
 import (
 	"os"
@@ -254,7 +254,7 @@ By referencing `constants.FilePerm` rather than `0644`, the codebase remains cle
 
 ---
 
-## `internal/notes/utils.go`
+## `internal/core/utils.go`
 This file acts as a shared utility belt for the notes package. Instead of duplicating logic across `add.go` and `list.go`, we define reusable functions here:
 
 - **`GetDateFolder()`**: Uses `time.Now()` to dynamically generate today's folder path (e.g. `notes/2026-03-01`).

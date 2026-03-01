@@ -14,7 +14,7 @@ This document provides the technical, point-by-point "how-to" for the first two 
     - `ft read [ID]`: Displays the content of a specific note.
     - `ft edit [ID] [text]`: Appends text to an existing note.
 
-### 📂 2. Filesystem Orchestration (`internal/notes/`)
+### 📂 2. Filesystem Orchestration (`internal/core/`)
 - **Modularity**: The monolithic `notes.go` was split into domain-specific files (`add.go`, `list.go`, `read.go`, `edit.go`, `utils.go`, `types.go`) for maintainability.
 - **Base Directory**: Default to `./notes` in the current working directory.
 - **Structure**: `notes/YYYY-MM-DD/ID_slug.md`.
@@ -28,7 +28,7 @@ This document provides the technical, point-by-point "how-to" for the first two 
     2. Lowercase and replace spaces/special characters with underscores.
 
 ### 🧪 3. Testing Infrastructure
-- **Location**: Found in `internal/notes/*_test.go`
+- **Location**: Found in `internal/core/*_test.go`
 - **Coverage**: Add, Edit, Read, List commands, plus string utility functions.
 - **Strategy**: Creating temporary, isolated `notes` directories (`os.MkdirTemp`) during tests to prevent polluting actual user data.
 
@@ -43,7 +43,7 @@ This document provides the technical, point-by-point "how-to" for the first two 
 - [x] **Codebase Reference**: Added `docs/ref.md` to serve as a quick reference for the project's structure, key functions, and constants.
 
 ### 🌐 6. Cross-Platform TODOs
-- [x] Audit `filepath.Join` and `filepath.ToSlash` across OSes, especially in `internal/notes/list.go`, to ensure flawless Linux/Mac compatibility.
+- [x] Audit `filepath.Join` and `filepath.ToSlash` across OSes, especially in `internal/core/list.go`, to ensure flawless Linux/Mac compatibility.
 - [x] Ensure terminal coloring (if added in the future) relies on cross-platform libraries (e.g. `fatih/color`).
 - [x] Ensure help has install/update commands information
 - [x] build and installer scripts, windows, linux & macos
@@ -74,7 +74,7 @@ tags: go,cli
 ```
 
 ### 🛠️ 2. Implementation Points
-- **Manual Parser (`internal/notes/meta.go`)**: 
+- **Manual Parser (`internal/core/meta.go`)**: 
     - Implement a custom line-by-line parser to extract key-value pairs (`key: value`) between `---` markers.
     - Avoid `yaml.v3` to keep it lightweight!
 - **Auto-Injection**: 
@@ -90,4 +90,4 @@ tags: go,cli
 ## 🏗️ Dev Setup & Project State
 - Module initialized as: `github.com/nickpricks/ft`
 - Dependencies: `github.com/spf13/cobra` (and no others yet!)
-- Phase 1 Code is living in `cmd/ft/` and `internal/cli/`, `internal/notes/`.
+- Phase 1 Code is living in `cmd/ft/` and `internal/cli/`, `internal/core/`.

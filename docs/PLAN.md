@@ -21,7 +21,7 @@
 ```
 /cmd/fmd          # CLI Entry Point
 /internal/cli     # CLI Command routing
-/internal/notes   # Note management logic
+/internal/core   # Note management logic
 /internal/site    # SSG logic
 /internal/deploy  # Deployment providers
 /internal/export  # Export engines (PDF, etc)

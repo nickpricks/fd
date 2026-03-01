@@ -27,9 +27,9 @@ const (
 
 // Root command texts
 const (
-	RootUse     = "ft"
-	RootShort   = "FeatherTrailMD is a quick notes tool - Super Fast Thoughts Notes"
-	RootLong    = `FeatherTrailMD (ft) is a simple, filesystem-first notes assistant.
+	RootUse   = "ft"
+	RootShort = "FeatherTrailMD is a quick notes tool - Super Fast Thoughts Notes"
+	RootLong  = `FeatherTrailMD (ft) is a simple, filesystem-first notes assistant.
 
 To install or upgrade this CLI tool:
 - Windows: Run .\install.ps1 or .\update.ps1
