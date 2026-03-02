@@ -65,10 +65,12 @@ build: clean
 build-all: clean
 	@echo "=> Building for multiple OS..."
 ifeq ($(OS),Windows_NT)
+	if not exist "bin" mkdir bin
 	set GOOS=linux&& set GOARCH=amd64&& go build -o bin/ft-linux-amd64 ./cmd/ft
 	set GOOS=darwin&& set GOARCH=amd64&& go build -o bin/ft-darwin-amd64 ./cmd/ft
 	set GOOS=windows&& set GOARCH=amd64&& go build -o bin/ft-windows-amd64.exe ./cmd/ft
 else
+	mkdir -p bin
 	GOOS=linux GOARCH=amd64 go build -o bin/ft-linux-amd64 ./cmd/ft
 	GOOS=darwin GOARCH=amd64 go build -o bin/ft-darwin-amd64 ./cmd/ft
 	GOOS=windows GOARCH=amd64 go build -o bin/ft-windows-amd64.exe ./cmd/ft
