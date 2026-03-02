@@ -49,6 +49,7 @@
   * `ft done 01` (Note: Status tracking moved to Phase 2)
 * **Rules**: Per-day incremental numbering, Slug from first 3–5 words, Pure append, No frontmatter yet.
 * **Infrastructure**: Test coverage, `Makefile`, and developer manual (`docs/man.md`).
+* **Packages & releases**: Github actions maybae
 
 ## Phase 2 – Metadata + Frontmatter
 **Goal**: Add structured metadata.

@@ -41,6 +41,7 @@ This document provides the technical, point-by-point "how-to" for the first two 
 - **Developer Manual**: Added `docs/man.md` featuring a line-by-line code explanation of how Cobra commands (`main`, `root`, `add_test`) are wired together for new contributors.
 - [x] **Developer Manual Continued** - Add, Edit, Read, List commands.
 - [x] **Codebase Reference**: Added `docs/ref.md` to serve as a quick reference for the project's structure, key functions, and constants.
+- [ ] **Reminder**: Update `README.md` and `docs/man.md` intros to reflect completed Phase 1 state.
 
 ### 🌐 6. Cross-Platform TODOs
 - [x] Audit `filepath.Join` and `filepath.ToSlash` across OSes, especially in `internal/core/list.go`, to ensure flawless Linux/Mac compatibility.
@@ -53,9 +54,16 @@ This document provides the technical, point-by-point "how-to" for the first two 
 ### GIT
 - [x] Initialize git repository, prep first commit
 - [x] Add & verify .gitignore
-- [ ] Add github (or any other) remote
+- [x] Add github (or any other) remote
 - [x] Add & verify initial README.md
 - [x] Commit & push initial code
+
+### 📦 7. Packages & Releases
+- [x] Setup GitHub Actions for CI/CD.
+- [x] Create release workflow (`.github/workflows/release.yml`) for cross-platform binaries.
+- [x] Automate creation of GitHub Releases on new tags. (maybe versions)
+- [ ] Verify package & release via GitHub.
+- [ ] Package availabilty as pkg.go.dev
 
 ---
 

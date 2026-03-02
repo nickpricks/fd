@@ -9,6 +9,11 @@ const (
 	ExtMD                = ".md"
 )
 
+// App Constants
+const (
+	Version = "v0.1.0"
+)
+
 // Log messages
 const (
 	LogNoteCreated = "Note created: %s\n"

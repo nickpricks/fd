@@ -10,6 +10,7 @@ var rootCmd = &cobra.Command{
 	Short:   constants.RootShort,
 	Long:    constants.RootLong,
 	Example: constants.RootExample,
+	Version: constants.Version,
 }
 
 func Execute() error {
