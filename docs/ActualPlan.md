@@ -43,6 +43,7 @@ This document provides the technical, point-by-point "how-to" for the first two 
 - [x] **Developer Manual Continued** - Add, Edit, Read, List commands.
 - [x] **Codebase Reference**: Added `docs/ref.md` to serve as a quick reference for the project's structure, key functions, and constants.
 - [ ] **Reminder**: Update `README.md` and `docs/man.md` intros to reflect completed Phase 1 state.
+- [ ] **Future TODO**: Maintain a `CHANGELOG.md` for all new releases.
 
 ### 🌐 6. Cross-Platform TODOs
 - [x] Audit `filepath.Join` and `filepath.ToSlash` across OSes, especially in `internal/core/list.go`, to ensure flawless Linux/Mac compatibility.
