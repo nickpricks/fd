@@ -7,19 +7,28 @@ FeatherTrailMD (`ft`) is a markdown-based notes engine that organizes your notes
 
 ## Installation
 
-### Windows
-Run the PowerShell installer script (requires administrative privileges if installing directly to GOPATH, or just use `make install` if you have `make` via Go/MinGW/etc.):
-```powershell
-.\install.ps1
+The easiest way to install FeatherTrailMD is via the `go` toolchain:
+
+```bash
+go install github.com/nickpricks/ft/cmd/feathertrailmd@latest
 ```
 
-### macOS / Linux
-Run the bash installer script:
-```bash
-./install.sh
-```
+*(Note: The entry point was renamed from `cmd/ft` to `cmd/feathertrailmd` to adhere to Go standard layout while preventing `.gitignore` conflicts with the compiled `ft` binary.)*
+
+Alternatively, you can run the provided installer scripts (`install.ps1` for Windows, `install.sh` for macOS/Linux).
 
 ## Usage
+
+### First Run
+When you run `ft` for the very first time, it will ask you where you'd like to store your Markdown notes globally:
+```
+Welcome to FeatherTrailMD!
+It looks like this is your first time running the tool.
+Where would you like to store your notes? [C:\Users\username\Documents\FeatherTrailNotes]:
+```
+Once configured, `ft` will save this path to `~/.fmd.json`, allowing you to take notes from any directory on your computer!
+
+### Commands
 `ft` is very straightforward to use:
 
 - **Create a note**: `ft add "My note text here"`

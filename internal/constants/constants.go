@@ -11,7 +11,7 @@ const (
 
 // App Constants
 const (
-	Version = "v0.1.5"
+	Version = "v0.1.6"
 )
 
 // Log messages

@@ -102,6 +102,11 @@
 
 ---
 
+# 🔮 Future TODOs & Discoveries
+* ~~**Global Configurable Storage**~~ (✅ Implemented via `~/.fmd.json`)
+
+---
+
 # 🏁 MVP Definition
 **MVP = Phase 1 + Phase 2**
 * Deliverables: Add, List, Read, Edit (append), Done, Metadata filtering.
