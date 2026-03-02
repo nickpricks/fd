@@ -19,7 +19,7 @@
 
 # 📂 Repository Structure (Target State)
 ```
-/cmd/fmd          # CLI Entry Point
+/cmd/feathertrailmd # CLI Entry Point
 /internal/cli     # CLI Command routing
 /internal/core   # Note management logic
 /internal/site    # SSG logic

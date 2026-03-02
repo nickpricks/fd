@@ -5,9 +5,10 @@ This document provides the technical, point-by-point "how-to" for the first two 
 ## Phase 1: Minimal CLI Notes Engine (COMPLETED ✅)
 **Goal**: Build a working note tool with per-day incremental IDs and slug generation.
 
-### 🔌 1. CLI Entry Point (`cmd/ft/main.go`)
+### 🔌 1. CLI Entry Point (`cmd/feathertrailmd/main.go`)
 - **Technology**: Use `spf13/cobra` for the CLI framework.
 - **Root**: `ft`
+- **Why `feathertrailmd`?**: Go standard layout puts entry points in `cmd/`. Initially, this was `cmd/ft`, but this conflicted with `.gitignore` rules meant to exclude the final `ft` binary, causing GitHub Actions to fail because the source code wasn't pushed. Renaming it strictly to the project name solves the ignore overlap while adhering to Go standards.
 - **Commands**:
     - `ft add [text]`: Creates a new note.
     - `ft list`: Lists all notes in chronological order.
@@ -98,4 +99,4 @@ tags: go,cli
 ## 🏗️ Dev Setup & Project State
 - Module initialized as: `github.com/nickpricks/ft`
 - Dependencies: `github.com/spf13/cobra` (and no others yet!)
-- Phase 1 Code is living in `cmd/ft/` and `internal/cli/`, `internal/core/`.
+- Phase 1 Code is living in `cmd/feathertrailmd/` and `internal/cli/`, `internal/core/`.

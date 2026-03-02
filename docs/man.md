@@ -9,7 +9,9 @@ We use [spf13/cobra](https://github.com/spf13/cobra), a popular Go library for c
 
 ---
 
-## `cmd/ft/main.go`
+## `cmd/feathertrailmd/main.go`
+*(Note: The CLI entry point was renamed from `cmd/ft` to `cmd/feathertrailmd` because the `.gitignore` rule for the compiled binary `ft` was accidentally ignoring the entire source folder, breaking the GitHub Actions automated release build.)*
+
 This is the entry point of the compiled binary.
 
 ```go

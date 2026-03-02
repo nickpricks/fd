@@ -59,30 +59,30 @@ cover:
 
 build: clean
 	@echo "=> Building binary..."
-	go build -o $(BINARY_NAME) ./cmd/ft
+	go build -o $(BINARY_NAME) ./cmd/feathertrailmd
 	@echo "=> Build complete: $(BINARY_NAME)"
 
 build-all: clean
 	@echo "=> Building for multiple OS..."
 ifeq ($(OS),Windows_NT)
 	if not exist "bin" mkdir bin
-	set GOOS=linux&& set GOARCH=amd64&& go build -o bin/ft-linux-amd64 ./cmd/ft
-	set GOOS=darwin&& set GOARCH=amd64&& go build -o bin/ft-darwin-amd64 ./cmd/ft
-	set GOOS=windows&& set GOARCH=amd64&& go build -o bin/ft-windows-amd64.exe ./cmd/ft
+	set GOOS=linux&& set GOARCH=amd64&& go build -o bin/ft-linux-amd64 ./cmd/feathertrailmd
+	set GOOS=darwin&& set GOARCH=amd64&& go build -o bin/ft-darwin-amd64 ./cmd/feathertrailmd
+	set GOOS=windows&& set GOARCH=amd64&& go build -o bin/ft-windows-amd64.exe ./cmd/feathertrailmd
 else
 	mkdir -p bin
-	GOOS=linux GOARCH=amd64 go build -o bin/ft-linux-amd64 ./cmd/ft
-	GOOS=darwin GOARCH=amd64 go build -o bin/ft-darwin-amd64 ./cmd/ft
-	GOOS=windows GOARCH=amd64 go build -o bin/ft-windows-amd64.exe ./cmd/ft
+	GOOS=linux GOARCH=amd64 go build -o bin/ft-linux-amd64 ./cmd/feathertrailmd
+	GOOS=darwin GOARCH=amd64 go build -o bin/ft-darwin-amd64 ./cmd/feathertrailmd
+	GOOS=windows GOARCH=amd64 go build -o bin/ft-windows-amd64.exe ./cmd/feathertrailmd
 endif
 	@echo "=> Cross-platform builds complete in bin/ directory"
 
 install: build
 	@echo "=> Installing ft to GOPATH/bin..."
-	go install ./cmd/ft
+	go install ./cmd/feathertrailmd
 
 upgrade:
 	@echo "=> Upgrading dependencies and reinstalling..."
 	go get -u ./...
 	go mod tidy
-	go install ./cmd/ft
+	go install ./cmd/feathertrailmd
