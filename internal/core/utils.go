@@ -44,8 +44,11 @@ func Slugify(text string) string {
 // findNoteByID recursively checks today's folder, then previous days' folders,
 // to locate a file whose name starts with the given ID prefix.
 func findNoteByID(id string) (string, error) {
-	if _, err := os.Stat(BaseDir); os.IsNotExist(err) {
-		return "", fmt.Errorf(constants.ErrNotesDirNotFound)
+	if _, err := os.Stat(BaseDir); err != nil {
+		if os.IsNotExist(err) {
+			return "", fmt.Errorf(constants.ErrNotesDirNotFound)
+		}
+		return "", fmt.Errorf("cannot access notes directory %s: %w", BaseDir, err)
 	}
 
 	dateFolders, err := os.ReadDir(BaseDir)
@@ -66,12 +69,19 @@ func findNoteByID(id string) (string, error) {
 		folderPath := filepath.Join(BaseDir, folder.Name())
 		files, err := os.ReadDir(folderPath)
 		if err != nil {
-			continue // Skip unreadable folders
+			if os.IsPermission(err) {
+				return "", fmt.Errorf("permission denied reading folder %s: %w", folderPath, err)
+			}
+			fmt.Fprintf(os.Stderr, "warning: skipping unreadable folder %s: %v\n", folderPath, err)
+			continue
 		}
 
 		for _, file := range files {
-			if !file.IsDir() && strings.HasPrefix(file.Name(), id+"_") {
-				return filepath.Join(folderPath, file.Name()), nil
+			if !file.IsDir() {
+				parts := strings.SplitN(file.Name(), "_", 2)
+				if parts[0] == id {
+					return filepath.Join(folderPath, file.Name()), nil
+				}
 			}
 		}
 	}
@@ -106,6 +116,9 @@ func getNextID(dateFolder string) (string, error) {
 				}
 			}
 		}
+	}
+	if maxID+1 > 99 {
+		return "", fmt.Errorf("maximum notes per day (99) exceeded")
 	}
 	return fmt.Sprintf("%02d", maxID+1), nil
 }

@@ -34,7 +34,9 @@ func runList(cmd *cobra.Command, args []string) error {
 	for _, note := range items {
 		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", note.Date, note.ID, note.Slug, note.Path)
 	}
-	w.Flush()
+	if err := w.Flush(); err != nil {
+		return fmt.Errorf("failed to write output: %w", err)
+	}
 	return nil
 }
 

@@ -13,6 +13,9 @@ var rootCmd = &cobra.Command{
 	Example: constants.RootExample,
 	Version: constants.Version,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		if cmd.Name() == "help" || cmd.CalledAs() == "help" {
+			return nil
+		}
 		return config.LoadOrInit()
 	},
 }

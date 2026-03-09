@@ -2,7 +2,7 @@
 
 This document provides the technical, point-by-point "how-to" for the first two phases of FeatherTrailMD (`ft`).
 
-## Phase 1: Minimal CLI Notes Engine (COMPLETED ✅)
+## Phase 1: Minimal CLI Notes Engine (IN PROGRESS 🔄)
 **Goal**: Build a working note tool with per-day incremental IDs and slug generation.
 
 ### 🔌 1. CLI Entry Point (`cmd/feathertrailmd/main.go`)
@@ -42,8 +42,14 @@ This document provides the technical, point-by-point "how-to" for the first two 
 - **Developer Manual**: Added `docs/man.md` featuring a line-by-line code explanation of how Cobra commands (`main`, `root`, `add_test`) are wired together for new contributors.
 - [x] **Developer Manual Continued** - Add, Edit, Read, List commands.
 - [x] **Codebase Reference**: Added `docs/ref.md` to serve as a quick reference for the project's structure, key functions, and constants.
-- [ ] **Reminder**: Update `README.md` and `docs/man.md` intros to reflect completed Phase 1 state.
+- [x] **Reminder**: Update `README.md` and `docs/man.md` automatic update and reflect completed Phase 1(thru n) state.
 - [ ] **Future TODO**: Maintain a `CHANGELOG.md` for all new releases.
+
+### 🧹 6. Phase 1 - Polish (Code Review Resolutions)
+- [x] **Configuration Safety**: Stabilized `internal/config`, gracefully handling nonexistent `~/.fmd.json`, invalid JSON parsing, and fallback behaviors for `UserHomeDir()` logic.
+- [x] **Filesystem Robustness**: Ensured edge cases evaluating invalid missing Base directories, read-only file permissions, and directory iteration (`Stat`, `ReadDir`, `Rel`) correctly yield errors instead of silently dropping data logic.
+- [x] **Coverage**: Elevated `internal/config` to tested status and added strict verification for test environment setups. Fixed 99 ID collision logic.
+- [x] **Documentation Verification**: Kept `man.md`, `ref.md` and actual behavior perfectly aligned.
 
 ### 🌐 6. Cross-Platform TODOs
 - [x] Audit `filepath.Join` and `filepath.ToSlash` across OSes, especially in `internal/core/list.go`, to ensure flawless Linux/Mac compatibility.
@@ -69,7 +75,7 @@ This document provides the technical, point-by-point "how-to" for the first two 
 
 ---
 
-## Phase 2: Metadata & Frontmatter (NEXT UP 🔜)
+## Phase 2: Metadata & Frontmatter (PLANNED 🔜)
 **Update TESTS and verify PH 1 changes**
 **Goal**: Add structured metadata and filtering support natively (No YAML dependencies).
 

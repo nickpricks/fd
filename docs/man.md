@@ -43,13 +43,22 @@ This defines the base `ft` command.
 ```go
 package cli
 
-import "github.com/spf13/cobra"
+import (
+    "github.com/nickpricks/ft/internal/config"
+    "github.com/spf13/cobra"
+)
 
 // 1. Define the root command struct.
 var rootCmd = &cobra.Command{
 	Use:   "ft", // The actual command users type
 	Short: "FeatherTrailMD is a quick notes tool - Super Fast Thoughts Notes", // Brief description
 	Long:  `FeatherTrailMD (ft) is a simple, filesystem-first notes assistant.`, // Detailed description
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		if cmd.Name() == "help" || cmd.CalledAs() == "help" {
+			return nil
+		}
+		return config.LoadOrInit()
+	},
 }
 
 // 2. Execute exposes the private rootCmd.Execute() to other packages (like our main.go).

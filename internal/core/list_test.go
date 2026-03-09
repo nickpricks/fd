@@ -10,7 +10,7 @@ func TestList(t *testing.T) {
 	// Setup a temporary base directory for isolated testing
 	tmpDir, err := os.MkdirTemp("", "ft-list-tests-")
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("test setup: %v", err)
 	}
 	defer os.RemoveAll(tmpDir)
 
@@ -32,15 +32,27 @@ func TestList(t *testing.T) {
 	date1 := "2026-03-01"
 	date2 := "2026-03-02"
 
-	os.MkdirAll(filepath.Join(tmpDir, date1), 0755)
-	os.MkdirAll(filepath.Join(tmpDir, date2), 0755)
+	if err := os.MkdirAll(filepath.Join(tmpDir, date1), 0755); err != nil {
+		t.Fatalf("test setup: %v", err)
+	}
+	if err := os.MkdirAll(filepath.Join(tmpDir, date2), 0755); err != nil {
+		t.Fatalf("test setup: %v", err)
+	}
 
-	os.WriteFile(filepath.Join(tmpDir, date1, "01_note_a.md"), []byte("A"), 0644)
-	os.WriteFile(filepath.Join(tmpDir, date1, "02_note_b.md"), []byte("B"), 0644)
-	os.WriteFile(filepath.Join(tmpDir, date2, "01_note_c.md"), []byte("C"), 0644)
+	if err := os.WriteFile(filepath.Join(tmpDir, date1, "01_note_a.md"), []byte("A"), 0644); err != nil {
+		t.Fatalf("test setup: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(tmpDir, date1, "02_note_b.md"), []byte("B"), 0644); err != nil {
+		t.Fatalf("test setup: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(tmpDir, date2, "01_note_c.md"), []byte("C"), 0644); err != nil {
+		t.Fatalf("test setup: %v", err)
+	}
 
 	// Create a non-md file that should be ignored
-	os.WriteFile(filepath.Join(tmpDir, date2, "02_ignore.txt"), []byte("Ignore"), 0644)
+	if err := os.WriteFile(filepath.Join(tmpDir, date2, "02_ignore.txt"), []byte("Ignore"), 0644); err != nil {
+		t.Fatalf("test setup: %v", err)
+	}
 
 	// Test case: Verify listing and chronological sorting
 	// Expected order:
@@ -67,5 +79,19 @@ func TestList(t *testing.T) {
 
 	if notes[2].Date != date1 || notes[2].ID != "01" || notes[2].Slug != "note_a" {
 		t.Errorf("expected oldest note last, got Date=%s ID=%s Slug=%s", notes[2].Date, notes[2].ID, notes[2].Slug)
+	}
+}
+
+func TestList_MissingBaseDir(t *testing.T) {
+	originalBaseDir := BaseDir
+	BaseDir = "/path/that/does/not/exist/for/testing"
+	defer func() { BaseDir = originalBaseDir }()
+
+	notes, err := List()
+	if err != nil {
+		t.Fatalf("List failed: %v", err)
+	}
+	if len(notes) != 0 {
+		t.Errorf("expected 0 notes, got %d", len(notes))
 	}
 }

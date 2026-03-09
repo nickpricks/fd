@@ -5,6 +5,7 @@ This is a quick-glance reference guide to the FeatherTrailMD project structure, 
 ## Directory Structure
 - `cmd/feathertrailmd/main.go`: The CLI entry point.
 - `internal/cli/`: Cobra CLI commands (`root.go`, `add.go`, `list.go`, `read.go`, `edit.go`).
+- `internal/config/`: Configuration file loading, parsing, and user prompting (`config.go`).
 - `internal/core/`: Pure filesystem logic (`add.go`, `list.go`, `read.go`, `edit.go`, `utils.go`, `types.go`).
 - `internal/constants/constants.go`: Shared global constants for the entire app.
 - `docs/`: Developer documentation and planning (`man.md`, `ref.md`, `PLAN.md`, `ActualPlan.md`).

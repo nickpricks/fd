@@ -2,6 +2,7 @@
 package core
 
 import (
+	"fmt"
 	"os"
 )
 
@@ -16,7 +17,7 @@ func Read(id string) (string, error) {
 	// Read the entire file content into memory
 	content, err := os.ReadFile(path)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to read note content: %w", err)
 	}
 
 	return string(content), nil

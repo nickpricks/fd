@@ -8,7 +8,7 @@ This is the executable entry point for the FeatherTrailMD (`ft`) CLI notes tool.
 go install github.com/nickpricks/ft/cmd/feathertrailmd@latest
 ```
 
-When you first run the `feathertrailmd` (or `ft`) binary, you'll be prompted to choose a configurable directory to store all your markdown notes in (defaults to `Documents/FeatherTrailNotes`).
+When you first run the `feathertrailmd` binary (or `ft` if built via `make build`), you'll be prompted to choose a configurable directory to store all your markdown notes in (defaults to `Documents/FeatherTrailNotes`).
 
 ## Quick Start
 

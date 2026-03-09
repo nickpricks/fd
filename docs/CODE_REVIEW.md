@@ -12,91 +12,91 @@ Fixes are grouped by priority. Check them off as you go.
 
 ### Critical — Fix Before Next Release
 
-- [ ] **C1. Distinguish file-not-found from other ReadFile errors** (`internal/config/config.go:35-43`)
+- [x] **C1. Distinguish file-not-found from other ReadFile errors** (`internal/config/config.go:35-43`)
   Only treat `os.IsNotExist` as first-run. Return errors for permission denied, I/O failures, etc.
 
-- [ ] **C2. Surface JSON parse errors instead of silent re-prompt** (`internal/config/config.go:39-42`)
+- [x] **C2. Surface JSON parse errors instead of silent re-prompt** (`internal/config/config.go:39-42`)
   If `~/.fmd.json` exists but contains invalid JSON, return an error telling the user their config is corrupt.
 
-- [ ] **C3. Stop silent fallback to relative `"notes"` path** (`internal/config/config.go:29-32`)
+- [x] **C3. Stop silent fallback to relative `"notes"` path** (`internal/config/config.go:29-32`)
   When home directory is unknown, return an error instead of silently using CWD-relative `./notes`.
 
-- [ ] **C4. Check stdin read error** (`internal/config/config.go:60`)
+- [x] **C4. Check stdin read error** (`internal/config/config.go:60`)
   Replace `input, _ := reader.ReadString('\n')` with proper error checking. Fail in non-interactive environments.
 
-- [ ] **C5. Reuse home dir from init() instead of calling UserHomeDir again** (`internal/config/config.go:52-53`)
+- [x] **C5. Reuse home dir from init() instead of calling UserHomeDir again** (`internal/config/config.go:52-53`)
   Store `home` in a package variable during `init()` and reuse it, or check the error on the second call.
 
-- [ ] **C6. Fix Windows test detection** (`internal/config/config.go:46`)
+- [x] **C6. Fix Windows test detection** (`internal/config/config.go:46`)
   Check for `.test.exe` suffix and use `filepath.Separator` instead of hardcoded `/` in `/_go_build_`.
 
-- [ ] **C7. Fix ID prefix collision after 99 notes/day** (`internal/core/utils.go:110`)
+- [x] **C7. Fix ID prefix collision after 99 notes/day** (`internal/core/utils.go:110`)
   Either cap at 99 with an error, or change `findNoteByID` to exact-match the numeric prefix.
 
 ### Important — Should Fix Soon
 
-- [ ] **I1. Check `filepath.Rel` error in List()** (`internal/core/list.go:33`)
+- [x] **I1. Check `filepath.Rel` error in List()** (`internal/core/list.go:33`)
   Replace `rel, _ := filepath.Rel(...)` with error handling. Notes silently disappear from listings without this.
 
-- [ ] **I2. Handle unreadable folder errors in findNoteByID** (`internal/core/utils.go:69`)
+- [x] **I2. Handle unreadable folder errors in findNoteByID** (`internal/core/utils.go:69`)
   Don't silently `continue` on `ReadDir` errors. At minimum, surface permission errors.
 
-- [ ] **I3. Check `defer f.Close()` error in Edit** (`internal/core/edit.go:23`)
+- [x] **I3. Check `defer f.Close()` error in Edit** (`internal/core/edit.go:23`)
   Use a named return and deferred closure to capture close errors (data loss risk on NFS/disk-full).
 
-- [ ] **I4. Handle non-NotExist errors from `os.Stat`** (`internal/core/list.go:19`, `internal/core/utils.go:47`)
+- [x] **I4. Handle non-NotExist errors from `os.Stat`** (`internal/core/list.go:19`, `internal/core/utils.go:47`)
   Both `List()` and `findNoteByID` only check `os.IsNotExist`, ignoring permission errors.
 
-- [ ] **I5. Wrap raw OS errors with context** (`internal/core/edit.go:20-27`, `internal/core/read.go:17`)
+- [x] **I5. Wrap raw OS errors with context** (`internal/core/edit.go:20-27`, `internal/core/read.go:17`)
   `edit.go` and `read.go` return bare OS errors. Wrap them like `add.go` does with `fmt.Errorf`.
 
-- [ ] **I6. Change config file permissions to 0600** (`internal/config/config.go:75`)
+- [x] **I6. Change config file permissions to 0600** (`internal/config/config.go:75`)
   `~/.fmd.json` is written world-readable (0644). Use 0600 for defense-in-depth.
 
-- [ ] **I7. Resolve user-supplied paths to absolute** (`internal/config/config.go:64`)
+- [x] **I7. Resolve user-supplied paths to absolute** (`internal/config/config.go:64`)
   Call `filepath.Abs(chosenDir)` before saving. Relative paths in the config cause CWD-dependent behavior.
 
-- [ ] **I8. Skip config init for --help and --version** (`internal/cli/root.go:15-17`)
+- [x] **I8. Skip config init for --help and --version** (`internal/cli/root.go:15-17`)
   `PersistentPreRunE` runs on every command including help. First-run users see a prompt before seeing usage.
 
-- [ ] **I9. Check `w.Flush()` error in list CLI** (`internal/cli/list.go:37`)
+- [x] **I9. Check `w.Flush()` error in list CLI** (`internal/cli/list.go:37`)
   `tabwriter.Flush()` returns an error that is currently discarded.
 
 ### Tests — Add Coverage
 
-- [ ] **T1. Create `internal/config/config_test.go`** — 0% coverage on the package that controls where all notes are stored.
+- [x] **T1. Create `internal/config/config_test.go`** — 0% coverage on the package that controls where all notes are stored.
   - Test: valid config loads and sets `BaseDir`
   - Test: corrupt JSON returns descriptive error
   - Test: empty `NotesDir` returns error
   - Test: empty `configFilePath` returns error
   - Test: config file is written and can be re-read (roundtrip)
 
-- [ ] **T2. Test `findNoteByID` when BaseDir doesn't exist** (`internal/core/utils.go:47-49`)
+- [x] **T2. Test `findNoteByID` when BaseDir doesn't exist** (`internal/core/utils.go:47-49`)
 
-- [ ] **T3. Test `getNextID` on nonexistent directory returns "01"** (`internal/core/utils.go:85-90`)
+- [x] **T3. Test `getNextID` on nonexistent directory returns "01"** (`internal/core/utils.go:85-90`)
 
-- [ ] **T4. Test `Edit` on a read-only file returns error** (`internal/core/edit.go`)
+- [x] **T4. Test `Edit` on a read-only file returns error** (`internal/core/edit.go`)
 
-- [ ] **T5. Test `List` when BaseDir doesn't exist returns empty slice** (`internal/core/list.go:19`)
+- [x] **T5. Test `List` when BaseDir doesn't exist returns empty slice** (`internal/core/list.go:19`)
 
-- [ ] **T6. Check errors on `os.MkdirAll`/`os.WriteFile` in test setup** (multiple test files)
+- [x] **T6. Check errors on `os.MkdirAll`/`os.WriteFile` in test setup** (multiple test files)
   Use `t.Fatal(err)` guards instead of discarding errors.
 
 ### Documentation — Update Stale Content
 
-- [ ] **D1. Update `BaseDir` comment in types.go** (`internal/core/types.go:5`)
+- [x] **D1. Update `BaseDir` comment in types.go** (`internal/core/types.go:5`)
   Says "During tests, it can be overridden" — config now overrides it on every run.
 
-- [ ] **D2. Update code listing in docs/man.md** (`docs/man.md:40-64`)
+- [x] **D2. Update code listing in docs/man.md** (`docs/man.md:40-64`)
   The `root.go` listing is missing the `PersistentPreRunE` hook.
 
-- [ ] **D3. Add `internal/config/` to docs/ref.md** (`docs/ref.md`)
+- [x] **D3. Add `internal/config/` to docs/ref.md** (`docs/ref.md`)
   The reference guide doesn't mention the new config package.
 
-- [ ] **D4. Fix platform-specific path in README** (`README.md:27`)
+- [x] **D4. Fix platform-specific path in README** (`README.md:27`)
   First-run example shows a Windows path. Show a platform-neutral placeholder or both OS examples.
 
-- [ ] **D5. Clarify binary naming in cmd README** (`cmd/feathertrailmd/README.md:11`)
+- [x] **D5. Clarify binary naming in cmd README** (`cmd/feathertrailmd/README.md:11`)
   Says "(or ft)" but `go install` produces `feathertrailmd`, not `ft`. Only `make build` creates `ft`.
 
 ### Architecture — Longer Term

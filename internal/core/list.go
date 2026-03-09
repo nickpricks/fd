@@ -2,6 +2,7 @@
 package core
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
@@ -30,7 +31,10 @@ func List() ([]NoteInfo, error) {
 			return nil
 		}
 
-		rel, _ := filepath.Rel(BaseDir, path)
+		rel, err := filepath.Rel(BaseDir, path)
+		if err != nil {
+			return fmt.Errorf("failed to compute relative path for %s: %w", path, err)
+		}
 		parts := strings.Split(filepath.ToSlash(rel), "/") // Expected: YYYY-MM-DD/ID_slug.md
 
 		if len(parts) >= 2 {
