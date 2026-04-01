@@ -45,7 +45,7 @@ func Slugify(text string) string {
 // to locate a file whose name starts with the given ID prefix.
 func findNoteByID(id string) (string, error) {
 	if _, err := os.Stat(BaseDir); os.IsNotExist(err) {
-		return "", fmt.Errorf(constants.ErrNotesDirNotFound)
+		return "", ErrNotesDirMissing
 	}
 
 	dateFolders, err := os.ReadDir(BaseDir)
@@ -75,7 +75,7 @@ func findNoteByID(id string) (string, error) {
 			}
 		}
 	}
-	return "", fmt.Errorf(constants.ErrNoteNotFound, id)
+	return "", fmt.Errorf("%w: %s", ErrNoteNotFound, id)
 }
 
 // getNextID scans the given date folder to find the highest existing ID prefix,

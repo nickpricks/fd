@@ -21,15 +21,6 @@ const (
 	LogNoNotes     = "No notes found."
 )
 
-// Error string templates
-const (
-	ErrNotesDirNotFound = "notes directory not found"
-	ErrNoteNotFound     = "note with ID %s not found"
-	ErrCreateDateFolder = "failed to create date folder: %w"
-	ErrGenerateID       = "failed to generate next ID: %w"
-	ErrWriteNote        = "failed to write note: %w"
-)
-
 // Root command texts
 const (
 	RootUse   = "ft"

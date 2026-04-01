@@ -16,12 +16,12 @@ func Add(text string) (string, error) {
 
 	// Ensure the directory exists
 	if err := os.MkdirAll(dateFolder, constants.DirPerm); err != nil {
-		return "", fmt.Errorf(constants.ErrCreateDateFolder, err)
+		return "", fmt.Errorf("%w: %w", ErrCreateDateDir, err)
 	}
 
 	id, err := getNextID(dateFolder)
 	if err != nil {
-		return "", fmt.Errorf(constants.ErrGenerateID, err)
+		return "", fmt.Errorf("%w: %w", ErrGenerateID, err)
 	}
 
 	slug := Slugify(text)
@@ -30,7 +30,7 @@ func Add(text string) (string, error) {
 
 	// Create the file and write the text
 	if err := os.WriteFile(path, []byte(text+"\n"), constants.FilePerm); err != nil {
-		return "", fmt.Errorf(constants.ErrWriteNote, err)
+		return "", fmt.Errorf("%w: %w", ErrWriteNote, err)
 	}
 	return path, nil
 }
