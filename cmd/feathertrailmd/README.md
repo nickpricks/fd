@@ -8,7 +8,9 @@ This is the executable entry point for the FeatherTrailMD (`ft`) CLI notes tool.
 go install github.com/nickpricks/ft/cmd/feathertrailmd@latest
 ```
 
-When you first run the `feathertrailmd` binary (or `ft` if built via `make build`), you'll be prompted to choose a configurable directory to store all your markdown notes in (defaults to `Documents/FeatherTrailNotes`).
+When you first run the binary, you'll be prompted to choose a directory to store your markdown notes in (defaults to `~/Documents/FeatherTrailNotes`).
+
+> **Note:** `go install` produces a binary named `feathertrailmd`. The `ft` binary name is only produced by `make build`. You can alias it: `alias ft=feathertrailmd`
 
 ## Quick Start
 
