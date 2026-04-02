@@ -9,16 +9,13 @@ import (
 )
 
 // Edit locates a note by its ID and appends the provided text to the bottom of the file.
-// Editing in this version is strictly limited to an append operation.
 func Edit(id string, text string) (path string, err error) {
 	path, err = findNoteByID(id)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to find note for editing: %w", err)
 	}
 
-	// Open file in append mode. Create it if it doesn't exist (though findNoteByID ensures it does).
-	var f *os.File
-	f, err = os.OpenFile(path, os.O_APPEND|os.O_WRONLY, constants.FilePerm)
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, constants.FilePerm)
 	if err != nil {
 		return "", fmt.Errorf("failed to open note for editing: %w", err)
 	}
@@ -28,8 +25,7 @@ func Edit(id string, text string) (path string, err error) {
 		}
 	}()
 
-	// Append text with a leading newline for separation
-	if _, err = f.WriteString("\n" + text + "\n"); err != nil {
+	if _, err := f.WriteString("\n" + text + "\n"); err != nil {
 		return "", fmt.Errorf("failed to write to note: %w", err)
 	}
 
