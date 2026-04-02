@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/nickpricks/ft/internal/constants"
+	"github.com/nickpricks/ft/internal/core"
 	"github.com/spf13/cobra"
 )
 
@@ -17,8 +18,11 @@ var readCmd = &cobra.Command{
 }
 
 func runRead(cmd *cobra.Command, args []string) error {
-	id := args[0]
-	content, err := store.Read(id)
+	noteID, err := core.ParseNoteID(args[0])
+	if err != nil {
+		return err
+	}
+	content, err := store.Read(noteID.String())
 	if err != nil {
 		return err
 	}
