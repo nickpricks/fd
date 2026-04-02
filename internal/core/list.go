@@ -2,6 +2,7 @@
 package core
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
@@ -16,8 +17,11 @@ func List() ([]NoteInfo, error) {
 	var notes []NoteInfo
 
 	// If base directory doesn't exist, there are simply no notes yet.
-	if _, err := os.Stat(BaseDir); os.IsNotExist(err) {
-		return notes, nil
+	if _, err := os.Stat(BaseDir); err != nil {
+		if os.IsNotExist(err) {
+			return notes, nil
+		}
+		return nil, fmt.Errorf("cannot access notes directory %s: %w", BaseDir, err)
 	}
 
 	err := filepath.WalkDir(BaseDir, func(path string, d os.DirEntry, err error) error {
@@ -30,7 +34,10 @@ func List() ([]NoteInfo, error) {
 			return nil
 		}
 
-		rel, _ := filepath.Rel(BaseDir, path)
+		rel, err := filepath.Rel(BaseDir, path)
+		if err != nil {
+			return fmt.Errorf("failed to compute relative path for %s: %w", path, err)
+		}
 		parts := strings.Split(filepath.ToSlash(rel), "/") // Expected: YYYY-MM-DD/ID_slug.md
 
 		if len(parts) >= 2 {
