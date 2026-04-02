@@ -15,9 +15,11 @@ type Config struct {
 	NotesDir string `json:"notes_dir"`
 }
 
-var configFilePath string
-var homeDir string
-var initErr error
+var (
+	configFilePath string
+	homeDir        string
+	initErr        error
+)
 
 func init() {
 	home, err := os.UserHomeDir()
@@ -26,7 +28,20 @@ func init() {
 		return
 	}
 	homeDir = home
-	configFilePath = filepath.Join(homeDir, ".fmd.json")
+	configFilePath = filepath.Join(home, ".fmd.json")
+}
+
+// isTestRun checks if the binary was launched by `go test`.
+func isTestRun() bool {
+	exe := os.Args[0]
+	base := filepath.Base(exe)
+	if strings.HasSuffix(base, ".test") || strings.HasSuffix(base, ".test.exe") {
+		return true
+	}
+	if strings.Contains(exe, string(filepath.Separator)+"_go_build_") {
+		return true
+	}
+	return false
 }
 
 // LoadOrInit reads the config file or prompts the user if it doesn't exist.
@@ -35,13 +50,20 @@ func LoadOrInit() error {
 		return fmt.Errorf("cannot load config: %w", initErr)
 	}
 
+	// If running under `go test`, bypass the prompt.
+	if isTestRun() {
+		core.BaseDir = "notes"
+		return nil
+	}
+
 	data, err := os.ReadFile(configFilePath)
 	if err != nil {
 		if !os.IsNotExist(err) {
 			return fmt.Errorf("failed to read config file %s: %w", configFilePath, err)
 		}
-		// File genuinely doesn't exist -> first run, fall through to prompt
+		// File genuinely doesn't exist — first run, fall through to prompt
 	} else {
+		// File exists — parse it
 		var cfg Config
 		if jsonErr := json.Unmarshal(data, &cfg); jsonErr != nil {
 			return fmt.Errorf("config file %s contains invalid JSON: %w\nTo fix: delete the file and re-run ft", configFilePath, jsonErr)
@@ -53,17 +75,7 @@ func LoadOrInit() error {
 		return nil
 	}
 
-	// If we're running under `go test`, bypass the prompt automatically.
-	// Note: The forward slash check may not match on Windows.
-	exe := os.Args[0]
-	base := filepath.Base(exe)
-	if strings.HasSuffix(base, ".test") || strings.HasSuffix(base, ".test.exe") ||
-		strings.Contains(exe, string(filepath.Separator)+"_go_build_") {
-		core.BaseDir = "notes"
-		return nil
-	}
-
-	// If we get here, the config file is missing. Prompt the user.
+	// First run — prompt user for notes directory
 	defaultDir := filepath.Join(homeDir, "Documents", "FeatherTrailNotes")
 
 	fmt.Printf("Welcome to FeatherTrailMD!\n")
@@ -82,6 +94,7 @@ func LoadOrInit() error {
 		chosenDir = input
 	}
 
+	// Resolve to absolute path
 	chosenDir, err = filepath.Abs(chosenDir)
 	if err != nil {
 		return fmt.Errorf("failed to resolve path: %w", err)
