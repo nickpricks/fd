@@ -45,8 +45,8 @@ See the `docs/` folder for more information:
 ## Roadmap & Vision
 FeatherTrailMD is designed to naturally evolve from a simple CLI note tool into a comprehensive Markdown ecosystem. 
 
-- **Phase 1: Minimal CLI Notes Engine (🔄 In Progress)**: Core filesystem logic (`internal/core`), `add`, `list`, `read`, and `edit` commands with incremental day-based ID generation.
-- **Phase 2: Metadata & Frontmatter (🔜 Planned)**: Custom line-by-line frontmatter parser to inject metadata and enable filtering via `list --status`, `--tag`, and `--date`.
+- **Phase 1: Minimal CLI Notes Engine (✅ Completed)**: Core filesystem logic (`internal/core`), `add`, `list`, `read`, and `edit` commands with incremental day-based ID generation.
+- **Phase 2: Metadata & Frontmatter (🔜 Next Up)**: Custom line-by-line frontmatter parser to inject metadata and enable filtering via `list --status`, `--tag`, and `--date`.
 - **Phase 3: Markdown Parser**: Custom Markdown parsing engine (Tokenizer, AST, HTML rendering).
 - **Phase 4: Advanced AST Editing**: Intelligent content modification based on the AST (e.g. `edit --after`).
 - **Phase 5: `mdcore` Library**: Extracting the formal parser into a reusable Go package.
