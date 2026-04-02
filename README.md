@@ -24,7 +24,7 @@ When you run `ft` for the very first time, it will ask you where you'd like to s
 ```
 Welcome to FeatherTrailMD!
 It looks like this is your first time running the tool.
-Where would you like to store your notes? [C:\Users\username\Documents\FeatherTrailNotes]:
+Where would you like to store your notes? [~/Documents/FeatherTrailNotes]:
 ```
 Once configured, `ft` will save this path to `~/.fmd.json`, allowing you to take notes from any directory on your computer!
 
