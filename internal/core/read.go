@@ -2,21 +2,20 @@
 package core
 
 import (
+	"fmt"
 	"os"
 )
 
 // Read locates a note by its ID and returns its raw string content.
-// It searches in the current day's folder first, then works backwards.
 func Read(id string) (string, error) {
 	path, err := findNoteByID(id)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to find note: %w", err)
 	}
 
-	// Read the entire file content into memory
 	content, err := os.ReadFile(path)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to read note content: %w", err)
 	}
 
 	return string(content), nil
