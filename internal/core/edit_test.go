@@ -21,7 +21,9 @@ func TestEdit(t *testing.T) {
 
 	// Create dummy note
 	dateFolder := GetDateFolder()
-	os.MkdirAll(dateFolder, 0755)
+	if err := os.MkdirAll(dateFolder, 0755); err != nil {
+		t.Fatalf("test setup: %v", err)
+	}
 
 	initialContent := "Initial line.\n"
 	err = os.WriteFile(filepath.Join(dateFolder, "01_test.md"), []byte(initialContent), 0644)
@@ -51,5 +53,36 @@ func TestEdit(t *testing.T) {
 	_, err = Edit("99", "should fail")
 	if err == nil || !strings.Contains(err.Error(), "not found") {
 		t.Errorf("expected 'not found' error for invalid ID editing, got %v", err)
+	}
+}
+
+func TestEdit_ReadOnlyFile(t *testing.T) {
+	tmpDir, err := os.MkdirTemp("", "ft-edit-readonly-")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpDir)
+
+	originalBaseDir := BaseDir
+	BaseDir = tmpDir
+	defer func() { BaseDir = originalBaseDir }()
+
+	dateFolder := GetDateFolder()
+	if err := os.MkdirAll(dateFolder, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	notePath := filepath.Join(dateFolder, "01_readonly.md")
+	if err := os.WriteFile(notePath, []byte("read only note\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chmod(notePath, 0444); err != nil {
+		t.Skip("cannot change file permissions on this OS")
+	}
+	defer os.Chmod(notePath, 0644)
+
+	_, err = Edit("01", "should fail")
+	if err == nil {
+		t.Error("expected error editing read-only file, got nil")
 	}
 }

@@ -21,7 +21,9 @@ func TestRead(t *testing.T) {
 
 	// Create a dummy note to read
 	dateFolder := GetDateFolder()
-	os.MkdirAll(dateFolder, 0755)
+	if err := os.MkdirAll(dateFolder, 0755); err != nil {
+		t.Fatalf("test setup: %v", err)
+	}
 
 	testContent := "This is a dummy read test\n"
 	err = os.WriteFile(filepath.Join(dateFolder, "01_test.md"), []byte(testContent), 0644)
