@@ -7,8 +7,10 @@ This is a quick-glance reference guide to the FeatherTrailMD project structure, 
 - `internal/cli/`: Cobra CLI commands (`root.go`, `add.go`, `list.go`, `read.go`, `edit.go`).
 - `internal/config/`: Configuration file loading, parsing, and user prompting (`config.go`).
 - `internal/core/`: Pure filesystem logic (`add.go`, `list.go`, `read.go`, `edit.go`, `utils.go`, `types.go`).
+- `internal/config/config.go`: Global configuration package that manages `~/.fmd.json` and first-run setup.
 - `internal/constants/constants.go`: Shared global constants for the entire app.
 - `docs/`: Developer documentation and planning (`man.md`, `ref.md`, `PLAN.md`, `ActualPlan.md`).
+- `Makefile`: Build automation (`make build`, `make test`, `make vet`, `make build-all`, etc.).
 
 ## Core Functions (`internal/core`)
 - `Add(text string) (string, error)`: Creates a new note in today's folder.
@@ -19,9 +21,14 @@ This is a quick-glance reference guide to the FeatherTrailMD project structure, 
 - `GetDateFolder() string`: Returns the target path for today's notes.
 - `findNoteByID(id string) (string, error)`: Helps locate an absolute file path from a short ID.
 
+## Config (`internal/config`)
+- `Config` struct: Holds `NotesDir string` (the user's chosen notes storage directory).
+- `LoadOrInit() error`: Reads `~/.fmd.json` or prompts the user on first run to choose a notes directory, then sets `core.BaseDir`.
+
 ## Core Constants (`internal/constants`)
+- **Version**: `Version = "v0.1.6"` (used by the root Cobra command for `--version` output)
 - **Permissions**: `FilePerm (0644)`, `DirPerm (0755)`
 - **Extensions**: `ExtMD (".md")`
 - **Output Logs**: `LogNoteCreated`, `LogNoNotes`, `LogNoteUpdated`
 - **Error Types**: `ErrNotesDirNotFound`, `ErrNoteNotFound` and formatting wrappers.
-- **CLI Commands**: Standard Cobra Use/Short/Long strings for cohesive UI.
+- **CLI Commands**: All Cobra command strings are centralized here (`RootUse`, `RootShort`, `RootLong`, `AddUse`, `AddShort`, `ListUse`, `ListShort`, `ReadUse`, `ReadShort`, `EditUse`, `EditShort`, and their `Long`/`Example` variants).
