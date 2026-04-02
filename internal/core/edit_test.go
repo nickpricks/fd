@@ -57,9 +57,9 @@ func TestEdit(t *testing.T) {
 }
 
 func TestEdit_ReadOnlyFile(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "ft-edit-tests-")
+	tmpDir, err := os.MkdirTemp("", "ft-edit-readonly-")
 	if err != nil {
-		t.Fatalf("test setup: %v", err)
+		t.Fatal(err)
 	}
 	defer os.RemoveAll(tmpDir)
 
@@ -69,16 +69,20 @@ func TestEdit_ReadOnlyFile(t *testing.T) {
 
 	dateFolder := GetDateFolder()
 	if err := os.MkdirAll(dateFolder, 0755); err != nil {
-		t.Fatalf("test setup: %v", err)
+		t.Fatal(err)
 	}
 
-	testFile := filepath.Join(dateFolder, "01_readonly.md")
-	if err := os.WriteFile(testFile, []byte("readonly"), 0444); err != nil {
-		t.Fatalf("test setup: %v", err)
+	notePath := filepath.Join(dateFolder, "01_readonly.md")
+	if err := os.WriteFile(notePath, []byte("read only note\n"), 0644); err != nil {
+		t.Fatal(err)
 	}
+	if err := os.Chmod(notePath, 0444); err != nil {
+		t.Skip("cannot change file permissions on this OS")
+	}
+	defer os.Chmod(notePath, 0644)
 
 	_, err = Edit("01", "should fail")
 	if err == nil {
-		t.Error("expected an error when editing a read-only file")
+		t.Error("expected error editing read-only file, got nil")
 	}
 }

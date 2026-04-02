@@ -1,6 +1,7 @@
 package core
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -55,6 +56,7 @@ func TestGetNextID(t *testing.T) {
 		t.Errorf("expected 01 for empty dir, got %v", id)
 	}
 
+	// Create some dummy markdown files
 	if err := os.WriteFile(tmpDir+"/01_test.md", []byte("test"), 0644); err != nil {
 		t.Fatalf("test setup: %v", err)
 	}
@@ -75,21 +77,26 @@ func TestGetNextID(t *testing.T) {
 	}
 }
 
-func TestGetNextID_NonexistentDir(t *testing.T) {
-	// Setup a temporary directory for testing
-	tmpDir, err := os.MkdirTemp("", "notes-test-")
-	if err != nil {
-		t.Fatalf("test setup: %v", err)
-	}
-	defer os.RemoveAll(tmpDir)
+func TestFindNoteByID_MissingBaseDir(t *testing.T) {
+	originalBaseDir := BaseDir
+	BaseDir = "/nonexistent/path/that/does/not/exist"
+	defer func() { BaseDir = originalBaseDir }()
 
-	// Subdir that does NOT exist
-	subDir := filepath.Join(tmpDir, "missing")
-	id, err := getNextID(subDir)
+	_, err := findNoteByID("01")
+	if err == nil {
+		t.Fatal("expected error when BaseDir doesn't exist, got nil")
+	}
+	if !errors.Is(err, ErrNotesDirMissing) {
+		t.Errorf("expected ErrNotesDirMissing, got: %v", err)
+	}
+}
+
+func TestGetNextID_NonexistentDir(t *testing.T) {
+	id, err := getNextID("/nonexistent/dir")
 	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("expected '01' for nonexistent dir, got error: %v", err)
 	}
 	if id != "01" {
-		t.Errorf("expected 01 for missing dir, got %v", id)
+		t.Errorf("expected '01', got %q", id)
 	}
 }

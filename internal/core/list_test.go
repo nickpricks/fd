@@ -38,7 +38,6 @@ func TestList(t *testing.T) {
 	if err := os.MkdirAll(filepath.Join(tmpDir, date2), 0755); err != nil {
 		t.Fatalf("test setup: %v", err)
 	}
-
 	if err := os.WriteFile(filepath.Join(tmpDir, date1, "01_note_a.md"), []byte("A"), 0644); err != nil {
 		t.Fatalf("test setup: %v", err)
 	}
@@ -84,12 +83,12 @@ func TestList(t *testing.T) {
 
 func TestList_MissingBaseDir(t *testing.T) {
 	originalBaseDir := BaseDir
-	BaseDir = "/path/that/does/not/exist/for/testing"
+	BaseDir = "/nonexistent/path/that/does/not/exist"
 	defer func() { BaseDir = originalBaseDir }()
 
 	notes, err := List()
 	if err != nil {
-		t.Fatalf("List failed: %v", err)
+		t.Fatalf("expected empty slice for missing BaseDir, got error: %v", err)
 	}
 	if len(notes) != 0 {
 		t.Errorf("expected 0 notes, got %d", len(notes))
