@@ -15,54 +15,89 @@ type Config struct {
 	NotesDir string `json:"notes_dir"`
 }
 
-var configFilePath string
+var (
+	configFilePath string
+	homeDir        string
+	initErr        error
+)
 
 func init() {
 	home, err := os.UserHomeDir()
-	if err == nil {
-		configFilePath = filepath.Join(home, ".fmd.json")
+	if err != nil {
+		initErr = fmt.Errorf("could not determine home directory: %w", err)
+		return
 	}
+	homeDir = home
+	configFilePath = filepath.Join(home, ".fmd.json")
+}
+
+// isTestRun checks if the binary was launched by `go test`.
+func isTestRun() bool {
+	exe := os.Args[0]
+	base := filepath.Base(exe)
+	if strings.HasSuffix(base, ".test") || strings.HasSuffix(base, ".test.exe") {
+		return true
+	}
+	if strings.Contains(exe, string(filepath.Separator)+"_go_build_") {
+		return true
+	}
+	return false
 }
 
 // LoadOrInit reads the config file or prompts the user if it doesn't exist.
 func LoadOrInit() error {
-	if configFilePath == "" {
-		// Fallback to local if home dir isn't found
+	if initErr != nil {
+		return fmt.Errorf("cannot load config: %w", initErr)
+	}
+
+	// If running under `go test`, bypass the prompt.
+	if isTestRun() {
 		core.BaseDir = "notes"
 		return nil
 	}
 
 	data, err := os.ReadFile(configFilePath)
-	if err == nil {
-		// Config exists!
-		var cfg Config
-		if err := json.Unmarshal(data, &cfg); err == nil && cfg.NotesDir != "" {
-			core.BaseDir = cfg.NotesDir
-			return nil
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return fmt.Errorf("failed to read config file %s: %w", configFilePath, err)
 		}
-	}
-
-	// If we're running under `go test`, bypass the prompt automatically.
-	if strings.HasSuffix(os.Args[0], ".test") || strings.Contains(os.Args[0], "/_go_build_") {
-		core.BaseDir = "notes"
+		// File genuinely doesn't exist — first run, fall through to prompt
+	} else {
+		// File exists — parse it
+		var cfg Config
+		if jsonErr := json.Unmarshal(data, &cfg); jsonErr != nil {
+			return fmt.Errorf("config file %s contains invalid JSON: %w\nTo fix: delete the file and re-run ft", configFilePath, jsonErr)
+		}
+		if cfg.NotesDir == "" {
+			return fmt.Errorf("config file %s has empty notes_dir field", configFilePath)
+		}
+		core.BaseDir = cfg.NotesDir
 		return nil
 	}
 
-	// If we get here, the config doesn't exist or is invalid. Prompt the user.
-	home, _ := os.UserHomeDir()
-	defaultDir := filepath.Join(home, "Documents", "FeatherTrailNotes")
+	// First run — prompt user for notes directory
+	defaultDir := filepath.Join(homeDir, "Documents", "FeatherTrailNotes")
 
 	fmt.Printf("Welcome to FeatherTrailMD!\n")
 	fmt.Printf("It looks like this is your first time running the tool.\n")
 	fmt.Printf("Where would you like to store your notes? [%s]: ", defaultDir)
 
 	reader := bufio.NewReader(os.Stdin)
-	input, _ := reader.ReadString('\n')
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		return fmt.Errorf("failed to read input (is stdin available?): %w", err)
+	}
 	input = strings.TrimSpace(input)
 
 	chosenDir := defaultDir
 	if input != "" {
 		chosenDir = input
+	}
+
+	// Resolve to absolute path
+	chosenDir, err = filepath.Abs(chosenDir)
+	if err != nil {
+		return fmt.Errorf("failed to resolve path: %w", err)
 	}
 
 	// Save the config
@@ -72,7 +107,7 @@ func LoadOrInit() error {
 		return fmt.Errorf("failed to save config: %w", err)
 	}
 
-	if err := os.WriteFile(configFilePath, data, 0644); err != nil {
+	if err := os.WriteFile(configFilePath, data, 0600); err != nil {
 		return fmt.Errorf("failed to write config file: %w", err)
 	}
 
