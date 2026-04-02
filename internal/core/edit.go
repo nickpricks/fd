@@ -8,9 +8,9 @@ import (
 	"github.com/nickpricks/ft/internal/constants"
 )
 
-// Edit locates a note by its ID and appends the provided text to the bottom of the file.
-func Edit(id string, text string) (path string, err error) {
-	path, err = findNoteByID(id)
+// editNote locates a note by its ID and appends the provided text to the bottom of the file.
+func editNote(baseDir string, id string, text string) (path string, err error) {
+	path, err = findNoteByID(baseDir, id)
 	if err != nil {
 		return "", fmt.Errorf("failed to find note for editing: %w", err)
 	}

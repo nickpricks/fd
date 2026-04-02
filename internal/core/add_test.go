@@ -8,22 +8,21 @@ import (
 )
 
 func TestAdd(t *testing.T) {
-	// Setup a temporary base directory to run tests without polluting real data
 	tmpDir, err := os.MkdirTemp("", "ft-tests-")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(tmpDir)
 
-	// Override BaseDir for the scope of this test to use tmp directory
-	originalBaseDir := BaseDir
-	BaseDir = tmpDir
-	defer func() { BaseDir = originalBaseDir }()
+	store, err := NewNoteStore(tmpDir)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	content := "This is a test note for this version"
 
 	// Test Add
-	path, err := Add(content)
+	path, err := store.Add(content)
 	if err != nil {
 		t.Fatalf("Add failed: %v", err)
 	}
@@ -33,7 +32,7 @@ func TestAdd(t *testing.T) {
 	}
 
 	// Verify file content
-	readBack, err := Read("01")
+	readBack, err := store.Read("01")
 	if err != nil {
 		t.Fatalf("Read failed: %v", err)
 	}
@@ -50,14 +49,15 @@ func TestAdd_MultipleNotes(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	originalBaseDir := BaseDir
-	BaseDir = tmpDir
-	defer func() { BaseDir = originalBaseDir }()
+	store, err := NewNoteStore(tmpDir)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	content1 := "First note"
 	content2 := "Second note"
 
-	path1, err := Add(content1)
+	path1, err := store.Add(content1)
 	if err != nil {
 		t.Fatalf("Add first note failed: %v", err)
 	}
@@ -65,7 +65,7 @@ func TestAdd_MultipleNotes(t *testing.T) {
 		t.Errorf("expected path to end with '01_first_note.md', got %q", path1)
 	}
 
-	path2, err := Add(content2)
+	path2, err := store.Add(content2)
 	if err != nil {
 		t.Fatalf("Add second note failed: %v", err)
 	}
@@ -81,11 +81,12 @@ func TestAdd_EmptyInput(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	originalBaseDir := BaseDir
-	BaseDir = tmpDir
-	defer func() { BaseDir = originalBaseDir }()
+	store, err := NewNoteStore(tmpDir)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	path, err := Add("")
+	path, err := store.Add("")
 	if err != nil {
 		t.Fatalf("Add empty note failed: %v", err)
 	}
@@ -96,26 +97,26 @@ func TestAdd_EmptyInput(t *testing.T) {
 }
 
 func TestAdd_Fail(t *testing.T) {
-	// Setup a temporary directory
 	tmpDir, err := os.MkdirTemp("", "ft-tests-")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(tmpDir)
 
-	// Create a file where the BaseDir should be, so MkdirAll fails
+	// Create a file where the baseDir should be, so MkdirAll fails
 	blockingFile := filepath.Join(tmpDir, "blocked_dir")
 	if err := os.WriteFile(blockingFile, []byte("blocker"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
-	originalBaseDir := BaseDir
-	BaseDir = blockingFile // Point BaseDir to a file instead of a directory
-	defer func() { BaseDir = originalBaseDir }()
+	store, err := NewNoteStore(blockingFile)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// This should fail because it attempts to create a directory inside a file
-	_, err = Add("This should fail")
+	_, err = store.Add("This should fail")
 	if err == nil {
-		t.Errorf("expected Add to fail when BaseDir is a file, but it succeeded")
+		t.Errorf("expected Add to fail when baseDir is a file, but it succeeded")
 	}
 }

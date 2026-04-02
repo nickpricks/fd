@@ -9,10 +9,10 @@ import (
 	"github.com/nickpricks/ft/internal/constants"
 )
 
-// Add creates a new note in today's date folder with the provided text.
+// addNote creates a new note in today's date folder with the provided text.
 // It returns the path to the newly created file or an error if the operation fails.
-func Add(text string) (string, error) {
-	dateFolder := GetDateFolder()
+func addNote(baseDir string, text string) (string, error) {
+	dateFolder := getDateFolder(baseDir)
 
 	// Ensure the directory exists
 	if err := os.MkdirAll(dateFolder, constants.DirPerm); err != nil {

@@ -65,13 +65,9 @@ func TestGetNextID(t *testing.T) {
 }
 
 func TestFindNoteByID_MissingBaseDir(t *testing.T) {
-	originalBaseDir := BaseDir
-	BaseDir = "/nonexistent/path/that/does/not/exist"
-	defer func() { BaseDir = originalBaseDir }()
-
-	_, err := findNoteByID("01")
+	_, err := findNoteByID("/nonexistent/path/that/does/not/exist", "01")
 	if err == nil {
-		t.Fatal("expected error when BaseDir doesn't exist, got nil")
+		t.Fatal("expected error when baseDir doesn't exist, got nil")
 	}
 	if !errors.Is(err, ErrNotesDirMissing) {
 		t.Errorf("expected ErrNotesDirMissing, got: %v", err)

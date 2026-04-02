@@ -14,10 +14,10 @@ import (
 	"github.com/nickpricks/ft/internal/constants"
 )
 
-// GetDateFolder returns the absolute or relative path to today's folder.
-// e.g., "notes/2026-03-01"
-func GetDateFolder() string {
-	return filepath.Join(BaseDir, time.Now().Format(time.DateOnly))
+// getDateFolder returns the path to today's folder within the given base directory.
+// e.g., "/home/user/notes/2026-03-01"
+func getDateFolder(baseDir string) string {
+	return filepath.Join(baseDir, time.Now().Format(time.DateOnly))
 }
 
 // Slugify converts an arbitrary string of text into a filesystem-safe string.
@@ -43,15 +43,15 @@ func Slugify(text string) string {
 
 // findNoteByID recursively checks today's folder, then previous days' folders,
 // to locate a file whose name starts with the given ID prefix.
-func findNoteByID(id string) (string, error) {
-	if _, err := os.Stat(BaseDir); err != nil {
+func findNoteByID(baseDir string, id string) (string, error) {
+	if _, err := os.Stat(baseDir); err != nil {
 		if os.IsNotExist(err) {
 			return "", ErrNotesDirMissing
 		}
-		return "", fmt.Errorf("cannot access notes directory %s: %w", BaseDir, err)
+		return "", fmt.Errorf("cannot access notes directory %s: %w", baseDir, err)
 	}
 
-	dateFolders, err := os.ReadDir(BaseDir)
+	dateFolders, err := os.ReadDir(baseDir)
 	if err != nil {
 		return "", err
 	}
@@ -66,7 +66,7 @@ func findNoteByID(id string) (string, error) {
 			continue
 		}
 
-		folderPath := filepath.Join(BaseDir, folder.Name())
+		folderPath := filepath.Join(baseDir, folder.Name())
 		files, err := os.ReadDir(folderPath)
 		if err != nil {
 			if os.IsPermission(err) {

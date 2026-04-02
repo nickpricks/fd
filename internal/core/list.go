@@ -11,20 +11,20 @@ import (
 	"github.com/nickpricks/ft/internal/constants"
 )
 
-// List recursively walks the BaseDir and returns a chronological slice of all NoteInfo.
-// If the BaseDir does not exist, it safely returns an empty slice.
-func List() ([]NoteInfo, error) {
+// listNotes recursively walks the baseDir and returns a chronological slice of all NoteInfo.
+// If the baseDir does not exist, it safely returns an empty slice.
+func listNotes(baseDir string) ([]NoteInfo, error) {
 	var notes []NoteInfo
 
 	// If base directory doesn't exist, there are simply no notes yet.
-	if _, err := os.Stat(BaseDir); err != nil {
+	if _, err := os.Stat(baseDir); err != nil {
 		if os.IsNotExist(err) {
 			return notes, nil
 		}
-		return nil, fmt.Errorf("cannot access notes directory %s: %w", BaseDir, err)
+		return nil, fmt.Errorf("cannot access notes directory %s: %w", baseDir, err)
 	}
 
-	err := filepath.WalkDir(BaseDir, func(path string, d os.DirEntry, err error) error {
+	err := filepath.WalkDir(baseDir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -34,7 +34,7 @@ func List() ([]NoteInfo, error) {
 			return nil
 		}
 
-		rel, err := filepath.Rel(BaseDir, path)
+		rel, err := filepath.Rel(baseDir, path)
 		if err != nil {
 			return fmt.Errorf("failed to compute relative path for %s: %w", path, err)
 		}

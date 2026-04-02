@@ -5,22 +5,23 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestEdit(t *testing.T) {
-	// Setup isolated tmp dir
 	tmpDir, err := os.MkdirTemp("", "ft-edit-tests-")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(tmpDir)
 
-	originalBaseDir := BaseDir
-	BaseDir = tmpDir
-	defer func() { BaseDir = originalBaseDir }()
+	store, err := NewNoteStore(tmpDir)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// Create dummy note
-	dateFolder := GetDateFolder()
+	dateFolder := filepath.Join(tmpDir, time.Now().Format(time.DateOnly))
 	if err := os.MkdirAll(dateFolder, 0755); err != nil {
 		t.Fatalf("test setup: %v", err)
 	}
@@ -33,13 +34,13 @@ func TestEdit(t *testing.T) {
 
 	// Test append
 	appendedText := "This is an appended line."
-	_, err = Edit("01", appendedText)
+	_, err = store.Edit("01", appendedText)
 	if err != nil {
 		t.Fatalf("Edit failed: %v", err)
 	}
 
 	// Verify content after edit
-	content, err := Read("01")
+	content, err := store.Read("01")
 	if err != nil {
 		t.Fatalf("Read after edit failed: %v", err)
 	}
@@ -50,7 +51,7 @@ func TestEdit(t *testing.T) {
 	}
 
 	// Test case: editing non-existent file
-	_, err = Edit("99", "should fail")
+	_, err = store.Edit("99", "should fail")
 	if err == nil || !strings.Contains(err.Error(), "not found") {
 		t.Errorf("expected 'not found' error for invalid ID editing, got %v", err)
 	}
@@ -63,11 +64,12 @@ func TestEdit_ReadOnlyFile(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	originalBaseDir := BaseDir
-	BaseDir = tmpDir
-	defer func() { BaseDir = originalBaseDir }()
+	store, err := NewNoteStore(tmpDir)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	dateFolder := GetDateFolder()
+	dateFolder := filepath.Join(tmpDir, time.Now().Format(time.DateOnly))
 	if err := os.MkdirAll(dateFolder, 0755); err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +83,7 @@ func TestEdit_ReadOnlyFile(t *testing.T) {
 	}
 	defer os.Chmod(notePath, 0644)
 
-	_, err = Edit("01", "should fail")
+	_, err = store.Edit("01", "should fail")
 	if err == nil {
 		t.Error("expected error editing read-only file, got nil")
 	}
