@@ -17,8 +17,11 @@ func List() ([]NoteInfo, error) {
 	var notes []NoteInfo
 
 	// If base directory doesn't exist, there are simply no notes yet.
-	if _, err := os.Stat(BaseDir); os.IsNotExist(err) {
-		return notes, nil
+	if _, err := os.Stat(BaseDir); err != nil {
+		if os.IsNotExist(err) {
+			return notes, nil
+		}
+		return nil, fmt.Errorf("cannot access notes directory %s: %w", BaseDir, err)
 	}
 
 	err := filepath.WalkDir(BaseDir, func(path string, d os.DirEntry, err error) error {
