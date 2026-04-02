@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/nickpricks/ft/internal/core"
 )
 
 func setupConfigTest(t *testing.T) (tmpDir string, cleanup func()) {
@@ -21,7 +19,6 @@ func setupConfigTest(t *testing.T) (tmpDir string, cleanup func()) {
 	origConfigPath := configFilePath
 	origHomeDir := homeDir
 	origInitErr := initErr
-	origBaseDir := core.BaseDir
 	origArgs0 := os.Args[0]
 
 	cleanup = func() {
@@ -29,7 +26,6 @@ func setupConfigTest(t *testing.T) (tmpDir string, cleanup func()) {
 		configFilePath = origConfigPath
 		homeDir = origHomeDir
 		initErr = origInitErr
-		core.BaseDir = origBaseDir
 		os.RemoveAll(tmpDir)
 	}
 
@@ -57,12 +53,13 @@ func TestLoadOrInit_ValidConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := LoadOrInit(); err != nil {
+	dir, err := LoadOrInit()
+	if err != nil {
 		t.Fatalf("LoadOrInit failed: %v", err)
 	}
 
-	if core.BaseDir != notesDir {
-		t.Errorf("expected BaseDir=%q, got %q", notesDir, core.BaseDir)
+	if dir != notesDir {
+		t.Errorf("expected dir=%q, got %q", notesDir, dir)
 	}
 }
 
@@ -74,7 +71,7 @@ func TestLoadOrInit_CorruptJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err := LoadOrInit()
+	_, err := LoadOrInit()
 	if err == nil {
 		t.Fatal("expected error for corrupt JSON, got nil")
 	}
@@ -92,7 +89,7 @@ func TestLoadOrInit_EmptyNotesDir(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err := LoadOrInit()
+	_, err := LoadOrInit()
 	if err == nil {
 		t.Fatal("expected error for empty notes_dir, got nil")
 	}
@@ -107,7 +104,7 @@ func TestLoadOrInit_InitError(t *testing.T) {
 
 	initErr = errors.New("simulated home dir failure")
 
-	err := LoadOrInit()
+	_, err := LoadOrInit()
 	if err == nil {
 		t.Fatal("expected error when initErr is set, got nil")
 	}
@@ -130,19 +127,20 @@ func TestLoadOrInit_ConfigRoundtrip(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := LoadOrInit(); err != nil {
+	dir, err := LoadOrInit()
+	if err != nil {
 		t.Fatalf("first LoadOrInit failed: %v", err)
 	}
-	if core.BaseDir != notesDir {
-		t.Errorf("first load: expected %q, got %q", notesDir, core.BaseDir)
+	if dir != notesDir {
+		t.Errorf("first load: expected %q, got %q", notesDir, dir)
 	}
 
-	core.BaseDir = "notes"
-	if err := LoadOrInit(); err != nil {
+	dir, err = LoadOrInit()
+	if err != nil {
 		t.Fatalf("second LoadOrInit failed: %v", err)
 	}
-	if core.BaseDir != notesDir {
-		t.Errorf("second load: expected %q, got %q", notesDir, core.BaseDir)
+	if dir != notesDir {
+		t.Errorf("second load: expected %q, got %q", notesDir, dir)
 	}
 }
 
@@ -159,7 +157,7 @@ func TestLoadOrInit_PermissionDenied(t *testing.T) {
 	}
 	defer os.Chmod(configFilePath, 0600)
 
-	err := LoadOrInit()
+	_, err := LoadOrInit()
 	if err == nil {
 		t.Fatal("expected error for unreadable config, got nil")
 	}

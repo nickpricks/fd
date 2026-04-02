@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/nickpricks/ft/internal/constants"
-	"github.com/nickpricks/ft/internal/core"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +20,7 @@ var editCmd = &cobra.Command{
 func runEdit(cmd *cobra.Command, args []string) error {
 	id := args[0]
 	text := strings.Join(args[1:], " ")
-	path, err := core.Edit(id, text)
+	path, err := store.Edit(id, text)
 	if err != nil {
 		return err
 	}

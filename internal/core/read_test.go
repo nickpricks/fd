@@ -5,22 +5,23 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestRead(t *testing.T) {
-	// Setup isolated tmp dir
 	tmpDir, err := os.MkdirTemp("", "ft-read-tests-")
 	if err != nil {
 		t.Fatalf("test setup: %v", err)
 	}
 	defer os.RemoveAll(tmpDir)
 
-	originalBaseDir := BaseDir
-	BaseDir = tmpDir
-	defer func() { BaseDir = originalBaseDir }()
+	store, err := NewNoteStore(tmpDir)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// Create a dummy note to read
-	dateFolder := GetDateFolder()
+	dateFolder := filepath.Join(tmpDir, time.Now().Format(time.DateOnly))
 	if err := os.MkdirAll(dateFolder, 0755); err != nil {
 		t.Fatalf("test setup: %v", err)
 	}
@@ -32,7 +33,7 @@ func TestRead(t *testing.T) {
 	}
 
 	// Test successful read
-	content, err := Read("01")
+	content, err := store.Read("01")
 	if err != nil {
 		t.Fatalf("Read failed: %v", err)
 	}
@@ -42,7 +43,7 @@ func TestRead(t *testing.T) {
 	}
 
 	// Test case: file not found
-	_, err = Read("99")
+	_, err = store.Read("99")
 	if err == nil || !strings.Contains(err.Error(), "not found") {
 		t.Errorf("expected 'not found' error for invalid ID, got %v", err)
 	}

@@ -6,7 +6,6 @@ import (
 	"text/tabwriter"
 
 	"github.com/nickpricks/ft/internal/constants"
-	"github.com/nickpricks/ft/internal/core"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +18,7 @@ var listCmd = &cobra.Command{
 }
 
 func runList(cmd *cobra.Command, args []string) error {
-	items, err := core.List()
+	items, err := store.List()
 	if err != nil {
 		return err
 	}

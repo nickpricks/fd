@@ -7,20 +7,19 @@ import (
 )
 
 func TestList(t *testing.T) {
-	// Setup a temporary base directory for isolated testing
 	tmpDir, err := os.MkdirTemp("", "ft-list-tests-")
 	if err != nil {
 		t.Fatalf("test setup: %v", err)
 	}
 	defer os.RemoveAll(tmpDir)
 
-	// Intercept and restore BaseDir
-	originalBaseDir := BaseDir
-	BaseDir = tmpDir
-	defer func() { BaseDir = originalBaseDir }()
+	store, err := NewNoteStore(tmpDir)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// Test case: Empty directory
-	notes, err := List()
+	notes, err := store.List()
 	if err != nil {
 		t.Fatalf("List failed on empty dir: %v", err)
 	}
@@ -58,7 +57,7 @@ func TestList(t *testing.T) {
 	// 1. 2026-03-02 01_note_c
 	// 2. 2026-03-01 02_note_b
 	// 3. 2026-03-01 01_note_a
-	notes, err = List()
+	notes, err = store.List()
 	if err != nil {
 		t.Fatalf("List failed with files: %v", err)
 	}
@@ -82,13 +81,14 @@ func TestList(t *testing.T) {
 }
 
 func TestList_MissingBaseDir(t *testing.T) {
-	originalBaseDir := BaseDir
-	BaseDir = "/nonexistent/path/that/does/not/exist"
-	defer func() { BaseDir = originalBaseDir }()
-
-	notes, err := List()
+	store, err := NewNoteStore("/nonexistent/path/that/does/not/exist")
 	if err != nil {
-		t.Fatalf("expected empty slice for missing BaseDir, got error: %v", err)
+		t.Fatal(err)
+	}
+
+	notes, err := store.List()
+	if err != nil {
+		t.Fatalf("expected empty slice for missing baseDir, got error: %v", err)
 	}
 	if len(notes) != 0 {
 		t.Errorf("expected 0 notes, got %d", len(notes))

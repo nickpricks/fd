@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/nickpricks/ft/internal/constants"
-	"github.com/nickpricks/ft/internal/core"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +19,7 @@ var addCmd = &cobra.Command{
 
 func runAdd(cmd *cobra.Command, args []string) error {
 	text := strings.Join(args, " ")
-	path, err := core.Add(text)
+	path, err := store.Add(text)
 	if err != nil {
 		return err
 	}
