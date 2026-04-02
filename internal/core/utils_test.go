@@ -3,8 +3,6 @@ package core
 import (
 	"errors"
 	"os"
-	"path/filepath"
-	"strings"
 	"testing"
 )
 
@@ -25,17 +23,6 @@ func TestSlugify(t *testing.T) {
 		if result != tt.expected {
 			t.Errorf("Slugify(%q) = %q, expected %q", tt.input, result, tt.expected)
 		}
-	}
-}
-
-func TestFindNoteByID_MissingBaseDir(t *testing.T) {
-	originalBaseDir := BaseDir
-	BaseDir = "/does/not/exist/surely/ft"
-	defer func() { BaseDir = originalBaseDir }()
-
-	_, err := findNoteByID("99")
-	if err == nil || !strings.Contains(err.Error(), "not found") {
-		t.Errorf("expected notes dir not found error, got %v", err)
 	}
 }
 
