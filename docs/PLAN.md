@@ -1,8 +1,8 @@
-# 🪶 FeatherTrailMD (fmd): The Dreams (PLAN.md)
+# 🪶 FeatherTrailMD (ft): The Dreams (PLAN.md)
 
 > "A feather-light trail of thoughts, captured in Markdown, evolving into a digital forest."
 
-**FeatherTrailMD** (`fmd`) is a terminal-first Markdown system that evolves in three layers:
+**FeatherTrailMD** (`ft`) is a terminal-first Markdown system that evolves in three layers:
 1. A fast CLI note tool (filesystem based)
 2. A reusable Markdown parsing library (`mdcore`)
 3. A static site generator with deploy and export capabilities
@@ -19,20 +19,22 @@
 
 # 📂 Repository Structure (Target State)
 ```
-/cmd/feathertrailmd # CLI Entry Point
-/internal/cli     # CLI Command routing
-/internal/core   # Note management logic
-/internal/site    # SSG logic
-/internal/deploy  # Deployment providers
-/internal/export  # Export engines (PDF, etc)
-/pkg/mdcore       # The core parser library
+/cmd/feathertrailmd  # CLI Entry Point
+/internal/cli        # CLI Command routing
+/internal/config     # Global configuration management
+/internal/constants  # Shared constants & version info
+/internal/core       # Note management logic
+/internal/site       # SSG logic (planned – Phase 6)
+/internal/deploy     # Deployment providers (planned – Phase 7)
+/internal/export     # Export engines (PDF, etc) (planned – Phase 8)
+/pkg/mdcore          # The core parser library (planned – Phase 5)
 ```
 
 ---
 
 # 🚀 The 8-Phase Roadmap
 
-## Phase 1 – Minimal CLI Notes Engine
+## Phase 1 – Minimal CLI Notes Engine ✅
 **Goal**: Build a working note tool with per-day incremental IDs.
 * **File Structure**:
   ```
@@ -48,8 +50,8 @@
   * `ft edit 01 "append text"`
   * `ft done 01` (Note: Status tracking moved to Phase 2)
 * **Rules**: Per-day incremental numbering, Slug from first 3–5 words, Pure append, No frontmatter yet.
-* **Infrastructure**: Test coverage, `Makefile`, and developer manual (`docs/man.md`).
-* **Packages & releases**: Github actions maybae
+* **Infrastructure**: Test coverage, `Makefile`, developer manual (`docs/man.md`), and global config (`~/.fmd.json`) with first-run prompt.
+* **Packages & releases**: GitHub Actions CI/CD with a release workflow that builds cross-platform binaries (Linux, macOS, Windows) on tag push. ✅
 
 ## Phase 2 – Metadata + Frontmatter
 **Goal**: Add structured metadata.
@@ -62,25 +64,25 @@
   ---
   ```
 * **New Features**:
-  * `fmd done 01`
-  * `fmd list --status draft`
-  * `fmd list --tag go`
-  * `fmd list --date 2026-03-01`
+  * `ft done 01`
+  * `ft list --status draft`
+  * `ft list --tag go`
+  * `ft list --date 2026-03-01`
 * **Implementation**: Manual extraction and parsing (No YAML engine).
 
 ## Phase 3 – Markdown Parser (Learning Phase)
 **Goal**: Build a custom Markdown parsing engine.
 * **Scope**: Tokenizer, Block parser (Headers, Lists, Paragraphs, Code blocks), AST representation, Markdown & HTML renderers.
 * **CLI Additions**:
-  * `fmd preview 01`
-  * `fmd export 01 --html`
+  * `ft preview 01`
+  * `ft export 01 --html`
 
 ## Phase 4 – Advanced Editing + AST Manipulation
 **Goal**: Intelligent content modification via AST.
 * **Features**:
-  * `fmd edit 01 "text" --after "XYZ"`
-  * `fmd edit 01 "text" --before "ABC"`
-  * `fmd edit 01 --replace "old" "new"`
+  * `ft edit 01 "text" --after "XYZ"`
+  * `ft edit 01 "text" --before "ABC"`
+  * `ft edit 01 --replace "old" "new"`
   * Task checkbox parsing, Link extraction, Directive block support.
 
 ## Phase 5 – Extract `mdcore` Library
@@ -88,7 +90,7 @@
 
 ## Phase 6 – Static Site Generator
 **Goal**: Convert notes into a professional blog using Go templates.
-* **Features**: `fmd publish 01`, `fmd build`, `fmd serve`.
+* **Features**: `ft publish 01`, `ft build`, `ft serve`.
 * **Output**: Index, Post, Tag pages, RSS, Sitemap.
 
 ## Phase 7 – Multi Deploy Targets
@@ -104,6 +106,7 @@
 
 # 🔮 Future TODOs & Discoveries
 * ~~**Global Configurable Storage**~~ (✅ Implemented via `~/.fmd.json`)
+* ~~**Phase 1 Infrastructure**~~ (✅ Makefile, test coverage, GitHub Actions release workflow with cross-platform binary builds on tag push)
 
 ---
 

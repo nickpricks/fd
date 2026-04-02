@@ -60,11 +60,16 @@ This document provides the technical, point-by-point "how-to" for the first two 
 - [x] Add & verify initial README.md
 - [x] Commit & push initial code
 
+### 🔧 Config & First-Run Setup (`internal/config/`)
+- **Global Config**: A `~/.fmd.json` config file stores the user's notes storage directory, enabling `ft` to work from any working directory.
+- **First-Run Prompt**: On first run (when no config exists), the user is prompted to choose a global storage directory. This is handled by `internal/config/` and wired into the CLI entry point.
+- **Constants**: Shared constants (version string, help text, etc.) are centralized in `internal/constants/`.
+
 ### 📦 7. Packages & Releases
 - [x] Setup GitHub Actions for CI/CD.
 - [x] Create release workflow (`.github/workflows/release.yml`) for cross-platform binaries.
 - [x] Automate creation of GitHub Releases on new tags. (maybe versions)
-- [ ] Verify package & release via GitHub.
+- [x] Verify package & release via GitHub. (Multiple releases pushed successfully, current version is v0.1.6.)
 - [ ] Package availabilty as pkg.go.dev
 
 ---
@@ -99,5 +104,6 @@ tags: go,cli
 
 ## 🏗️ Dev Setup & Project State
 - Module initialized as: `github.com/nickpricks/ft`
+- Current version: **v0.1.6** (master branch)
 - Dependencies: `github.com/spf13/cobra` (and no others yet!)
-- Phase 1 Code is living in `cmd/feathertrailmd/` and `internal/cli/`, `internal/core/`.
+- Phase 1 Code is living in `cmd/feathertrailmd/` and `internal/cli/`, `internal/config/`, `internal/constants/`, `internal/core/`.

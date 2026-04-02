@@ -38,30 +38,56 @@ func main() {
 ---
 
 ## `internal/cli/root.go`
-This defines the base `ft` command.
+This defines the base `ft` command and ensures configuration is loaded before any subcommand runs.
 
 ```go
 package cli
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/nickpricks/ft/internal/config"
+	"github.com/nickpricks/ft/internal/constants"
+	"github.com/spf13/cobra"
+)
 
 // 1. Define the root command struct.
+//    All user-facing strings (Use, Short, Long, Example) are pulled from the constants package
+//    rather than being hardcoded here, keeping command metadata centralized and consistent.
 var rootCmd = &cobra.Command{
-	Use:   "ft", // The actual command users type
-	Short: "FeatherTrailMD is a quick notes tool - Super Fast Thoughts Notes", // Brief description
-	Long:  `FeatherTrailMD (ft) is a simple, filesystem-first notes assistant.`, // Detailed description
+	Use:     constants.RootUse,
+	Short:   constants.RootShort,
+	Long:    constants.RootLong,
+	Example: constants.RootExample,
+	Version: constants.Version, // Prints the version when the user runs `ft --version`
+
+	// 2. PersistentPreRunE runs before every subcommand (add, list, read, edit, etc.).
+	//    This is where we load (or initialize) the user's configuration, which sets the
+	//    notes directory path. If the config file doesn't exist yet (first run), it
+	//    prompts the user interactively and creates one.
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		return config.LoadOrInit()
+	},
 }
 
-// 2. Execute exposes the private rootCmd.Execute() to other packages (like our main.go).
+// 3. Execute exposes the private rootCmd.Execute() to other packages (like our main.go).
 func Execute() error {
 	return rootCmd.Execute()
 }
 
-// 3. init() runs automatically before main(). This is where we wire up global flags.
+// 4. init() runs automatically before main(). This is where we wire up global flags.
 func init() {
-	// e.g., rootCmd.PersistentFlags().String("config", "", "config file...")
+	// Root flags can be added here
 }
 ```
+
+---
+
+## `internal/config/config.go`
+This module handles persistent user configuration. It is called on every invocation via the root command's `PersistentPreRunE` hook (see above).
+
+- Configuration lives in `~/.fmd.json`.
+- On the very first run, `LoadOrInit()` detects the missing config file and interactively prompts the user for a notes storage directory, then writes it to disk.
+- On subsequent runs, it reads the existing config and sets `core.BaseDir` to the configured path so that all note operations target the correct directory.
+- This design means the user never has to pass a `--dir` flag; the choice is made once and remembered.
 
 ---
 
@@ -74,42 +100,48 @@ package cli
 import (
 	"fmt"
 	"strings"
+
+	"github.com/nickpricks/ft/internal/constants"
 	"github.com/nickpricks/ft/internal/core"
 	"github.com/spf13/cobra"
 )
 
 // 1. Define the 'add' subcommand.
+//    Like root.go, all user-facing strings come from the constants package.
 var addCmd = &cobra.Command{
-	Use:     "add [text...]", // The "..." indicates it accepts multiple words
-	Short:   "Quickly capture a new note",
-	Long:    `The add command takes any text you provide and creates a new markdown note...`,
-	Example: `  ft add "Meeting notes"`,
+	Use:     constants.AddUse,
+	Short:   constants.AddShort,
+	Long:    constants.AddLong,
+	Example: constants.AddExample,
 	Args:    cobra.MinimumNArgs(1), // Validation: Fails if the user provides 0 arguments.
-	
-	// 2. RunE is the actual execution function that returns an error.
-	RunE: func(cmd *cobra.Command, args []string) error {
-        // 3. args is a slice of strings. If the user didn't use quotes (ft add Hello World), 
-        // args will be ["Hello", "World"]. We join them back together with spaces.
-		text := strings.Join(args, " ")
-        
-        // 4. Call our core business logic in the 'notes' package.
-		path, err := notes.Add(text)
-		if err != nil {
-			return err // Return error to Cobra, which will print it.
-		}
-        
-        // 5. Success! Print the path to the newly created note.
-		fmt.Printf("Note created: %s\n", path)
-		return nil
-	},
+	RunE:    runAdd,                // 2. Points to a named function rather than an inline closure.
 }
 
-// 6. Automatically register addCmd under rootCmd when the program starts.
+// 3. runAdd is the actual execution function for the add command.
+//    Extracting it into a named function keeps the command definition clean
+//    and makes the logic easier to test or refactor independently.
+func runAdd(cmd *cobra.Command, args []string) error {
+	// 4. args is a slice of strings. If the user didn't use quotes (ft add Hello World),
+	// args will be ["Hello", "World"]. We join them back together with spaces.
+	text := strings.Join(args, " ")
+
+	// 5. Call our core business logic in the core package.
+	path, err := core.Add(text)
+	if err != nil {
+		return err // Return error to Cobra, which will print it.
+	}
+
+	// 6. Success! Print the path using the centralized format string.
+	fmt.Printf(constants.LogNoteCreated, path)
+	return nil
+}
+
+// 7. Automatically register addCmd under rootCmd when the program starts.
 func init() {
 	rootCmd.AddCommand(addCmd)
 }
 ```
-*(Similar Cobra definitions exist for `list.go`, `read.go`, and `edit.go`, each parsing their specific arguments and calling the corresponding `notes` package function).*
+*(Similar Cobra definitions exist for `list.go`, `read.go`, and `edit.go`, each parsing their specific arguments and calling the corresponding `core` package function).*
 
 ---
 
@@ -257,7 +289,7 @@ By referencing `constants.FilePerm` rather than `0644`, the codebase remains cle
 ---
 
 ## `internal/core/utils.go`
-This file acts as a shared utility belt for the notes package. Instead of duplicating logic across `add.go` and `list.go`, we define reusable functions here:
+This file acts as a shared utility belt for the core package. Instead of duplicating logic across `add.go` and `list.go`, we define reusable functions here:
 
 - **`GetDateFolder()`**: Uses `time.Now()` to dynamically generate today's folder path (e.g. `notes/2026-03-01`).
 - **`Slugify(text)`**: Safely converts the first few words of a note into a valid file slug by stripping punctuation and injecting underscores.

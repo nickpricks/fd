@@ -87,10 +87,10 @@ Fixes are grouped by priority. Check them off as you go.
 - [ ] **D1. Update `BaseDir` comment in types.go** (`internal/core/types.go:5`)
   Says "During tests, it can be overridden" — config now overrides it on every run.
 
-- [ ] **D2. Update code listing in docs/man.md** (`docs/man.md:40-64`)
+- [x] **D2. Update code listing in docs/man.md** (`docs/man.md:40-64`)
   The `root.go` listing is missing the `PersistentPreRunE` hook.
 
-- [ ] **D3. Add `internal/config/` to docs/ref.md** (`docs/ref.md`)
+- [x] **D3. Add `internal/config/` to docs/ref.md** (`docs/ref.md`)
   The reference guide doesn't mention the new config package.
 
 - [ ] **D4. Fix platform-specific path in README** (`README.md:27`)
